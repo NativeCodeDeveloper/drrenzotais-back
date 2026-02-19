@@ -20,6 +20,9 @@ import carruselPortadaRoutes from "./view/carruselPortadaRoutes.js";
 import subSubCategoriaRoutes from "./view/subSubCategoriaRoutes.js";
 import especificacionProductoRoutes from "./view/especificacionProductoRoutes.js";
 import notificacionAgendamientoRoutes from "./view/notificacionAgendamientoRoutes.js";
+import profesionalesRoutes from "./view/profesionalesRoutes.js";
+import serviciosProfesionalesRoutes from "./view/serviciosProfesionalesRoutes.js";
+import tarifasProfesionalRoutes from "./view/tarifasProfesionalRoutes.js";
 import { ejecutarRecordatoriosAutomaticos } from "./services/notificacionPreviaDia.js";
 
 
@@ -39,6 +42,9 @@ app.use(cors(corsConfig));
 
 app.get("/", (req, res) => { res.send("Hola mundo"); });
 app.use("/pedidos", pedidosRoutes);
+app.use("/profesionales", profesionalesRoutes);
+app.use("/serviciosProfesionales", serviciosProfesionalesRoutes);
+app.use("/tarifasProfesional", tarifasProfesionalRoutes);
 app.use("/especificacionProducto", especificacionProductoRoutes);
 app.use("/subsubcategorias", subSubCategoriaRoutes);
 app.use("/carruselPortada", carruselPortadaRoutes);
