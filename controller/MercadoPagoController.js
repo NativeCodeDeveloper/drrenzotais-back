@@ -27,7 +27,7 @@ export const createOrder = async (req, res) => {
             horaInicio,
             fechaFinalizacion,
             horaFinalizacion,
-            estadoReserva = 'reservada',
+            estadoReserva ,
             totalPago
         } = req.body;
 

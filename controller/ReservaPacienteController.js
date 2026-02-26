@@ -307,8 +307,36 @@ export default class ReservaPacienteController {
                 const resultadoQuery = await claseReservaPaciente.insertarReservaPaciente(nombrePaciente, apellidoPaciente, rut, telefono, email, fechaInicio, horaInicio, fechaFinalizacion, horaFinalizacion, estadoReserva)
 
                 if (resultadoQuery.affectedRows > 0) {
-                    // Enviar correo de confirmación (no bloquear la respuesta si falla)
+                    // Correo al paciente
+                    try {
+                        await NotificacionAgendamiento.enviarCorreoConfirmacionReserva({
+                            to: email,
+                            nombrePaciente,
+                            apellidoPaciente,
+                            rut,
+                            telefono,
+                            fechaInicio,
+                            horaInicio,
+                            fechaFinalizacion,
+                            horaFinalizacion,
+                            estadoReserva,
+                            id_reserva: resultadoQuery.insertId
+                        });
+                    } catch (err) {
+                        console.error("[MAIL] Error:", err.message);
+                    }
 
+                    // Correo al equipo
+                    NotificacionAgendamiento.enviarCorreoConfirmacionEquipo({
+                        nombrePaciente,
+                        apellidoPaciente,
+                        fechaInicio,
+                        horaInicio,
+                        accion: "AGENDADA",
+                        id_reserva: resultadoQuery.insertId
+                    }).catch(err => {
+                        console.error("[MAIL EQUIPO] Error:", err.message);
+                    });
 
                     return res.status(200).send({message: true})
                 } else {
