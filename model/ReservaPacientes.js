@@ -52,6 +52,37 @@ export default class ReservaPacientes {
     }
 
 
+/*
+
+=====> cambiarReservaPagadaVisible(preference_id) <=======
+LO QUE SE HACE ACA ES CAMBIAR EL estadoPeticion EL CUAL POR DEFECTO ES 1, PERO SI NO HA PAGADO SE INGRESA COMO 0 SOLO SI PAGA SE DEJA VISIBLE Y OPERATIVA
+-->SOLO SE USA EN EN CONTROLLER DE MERCADO PAGO.
+
+* */
+    async cambiarReservaPagadaVisible(preference_id) {
+        try {
+            const conexion = DataBase.getInstance();
+            const query = "UPDATE reservaPacientes SET estadoPeticion = 1  WHERE preference_id = ?";
+            const params = [preference_id];
+            const resultado = await conexion.ejecutarQuery(query, params);
+            if (resultado) {
+                return resultado;
+            } else {
+                return console.error('Ha habido un problema al ejecutar la consulta desde model en ReservaPacientes.js , NO se ha podido cambiar el estado correctamente a pagado ')
+            }
+        } catch (e) {
+            console.log('Problema encontrado a nivel del model en ReservaPacientes.js :  ' + e);
+            throw new Error('No se ha podido actualizar el pago desde la clase del modelo ReservaPacientes.js :  ' + e);
+        }
+    }
+
+
+
+
+
+
+
+
     //METODO PARA SELECCIONAR TODAS LAS CITAS MEDICAS SEGUN ESTADO DE RESERVA INGRESADO
     async seleccionarReservaEstado(estadoReserva) {
         try {
@@ -164,7 +195,8 @@ export default class ReservaPacientes {
         const query = `
          SELECT COUNT(*) AS cnt
         FROM reservaPacientes
-        WHERE NOT (
+        WHERE estadoPeticion = 1
+        AND NOT (
           TIMESTAMP(fechaFinalizacion, horaFinalizacion) <= TIMESTAMP(?, ?)
           OR TIMESTAMP(fechaInicio, horaInicio) >= TIMESTAMP(?, ?)
         )
@@ -254,11 +286,11 @@ export default class ReservaPacientes {
 
 
     //METODO PARA INSERTAR NUEVAS CITAS MEDICAS DESDE METODOS INTERNOS DEL BACKEND COMO MERCADO PAGO
-    async insertarReservaPacienteBackend(nombrePaciente, apellidoPaciente, rut, telefono, email, fechaInicio, horaInicio, fechaFinalizacion, horaFinalizacion, estadoReserva, preference_id) {
+    async insertarReservaPacienteBackend(nombrePaciente, apellidoPaciente, rut, telefono, email, fechaInicio, horaInicio, fechaFinalizacion, horaFinalizacion, estadoReserva, preference_id, estadoPeticion) {
         try {
             const conexion = DataBase.getInstance();
-            const query = 'INSERT INTO reservaPacientes(nombrePaciente, apellidoPaciente, rut, telefono, email, fechaInicio, horaInicio,fechaFinalizacion, horaFinalizacion, estadoReserva, preference_id) VALUES (?,?,?,?,?,?,?,?,?,?,?)';
-            const param = [nombrePaciente, apellidoPaciente, rut, telefono, email, fechaInicio, horaInicio, fechaFinalizacion, horaFinalizacion, estadoReserva, preference_id];
+            const query = 'INSERT INTO reservaPacientes(nombrePaciente, apellidoPaciente, rut, telefono, email, fechaInicio, horaInicio,fechaFinalizacion, horaFinalizacion, estadoReserva, preference_id, estadoPeticion) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)';
+            const param = [nombrePaciente, apellidoPaciente, rut, telefono, email, fechaInicio, horaInicio, fechaFinalizacion, horaFinalizacion, estadoReserva, preference_id,estadoPeticion];
 
             const resultadoQuery = await conexion.ejecutarQuery(query, param);
             if (resultadoQuery) {

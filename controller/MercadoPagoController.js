@@ -27,7 +27,7 @@ export const createOrder = async (req, res) => {
             horaInicio,
             fechaFinalizacion,
             horaFinalizacion,
-            estadoReserva = 'pendiente pago',
+            estadoReserva = 'reservada',
             totalPago
         } = req.body;
 
@@ -88,10 +88,11 @@ export const createOrder = async (req, res) => {
         // --- INSERTAR RESERVA CON ESTADO "pendiente pago" ---
         try {
             const reservaPacienteClass = new ReservaPacientes();
+            const estadoPeticion = 0;
             const resultadoInsert = await reservaPacienteClass.insertarReservaPacienteBackend(
                 nombrePaciente, apellidoPaciente, rut, telefono, email,
                 fechaInicio, horaInicio, fechaFinalizacion, horaFinalizacion,
-                estadoReserva, preference_id
+                estadoReserva, preference_id,estadoPeticion
             );
 
             if (resultadoInsert && resultadoInsert.affectedRows > 0) {
@@ -211,7 +212,7 @@ export const recibirPago = async (req, res) => {
             try {
                 // --- CAMBIAR ESTADO DE LA RESERVA A "reservada" ---
                 const reservaPacientesClass = new ReservaPacientes();
-                const resultadoQuery = await reservaPacientesClass.cambiarReservaPagada(preference_id);
+                const resultadoQuery = await reservaPacientesClass.cambiarReservaPagadaVisible(preference_id);
 
                 if (resultadoQuery && resultadoQuery.affectedRows > 0) {
                     console.log("--------> RESERVA ACTUALIZADA A 'reservada' para preference_id:", preference_id);
