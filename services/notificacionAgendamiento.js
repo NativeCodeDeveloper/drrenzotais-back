@@ -33,24 +33,23 @@ export default class NotificacionAgendamiento {
 
     // En Brevo, el 'from' debe ser un remitente verificado.
     const fromEmail = process.env.CORREO_REMITENTE || "desarrollo.native.code@gmail.com";
-    const fromName = NOMBRE_EMPRESA || "SiluetaChic";
+    const fromName = NOMBRE_EMPRESA || "Sistema de Agendamiento";
 
     if (!fromEmail) {
       console.warn("[MAIL] CORREO_REMITENTE no configurado. Correo no enviado.");
       return;
     }
 
-    const subject = `¡Tu cita con ${fromName} ha sido confirmada! 🎉`;
+    const subject = `Tu cita en ${fromName} ha sido registrada`;
 
     // Construir URLs
     const baseUrl = process.env.BACKEND_URL || "https://siluetachic.nativecode.cl";
-    const frontendUrl = process.env.FRONTEND_URL || "https://siluetachic.cl";
     const urlConfirmar = `${baseUrl}/notificacion/confirmar?id_reserva=${id_reserva}&nombrePaciente=${encodeURIComponent(nombrePaciente)}&apellidoPaciente=${encodeURIComponent(apellidoPaciente)}&fechaInicio=${encodeURIComponent(fechaInicio)}&horaInicio=${encodeURIComponent(horaInicio)}`;
     const urlCancelar = `${baseUrl}/notificacion/cancelar?id_reserva=${id_reserva}&nombrePaciente=${encodeURIComponent(nombrePaciente)}&apellidoPaciente=${encodeURIComponent(apellidoPaciente)}&fechaInicio=${encodeURIComponent(fechaInicio)}&horaInicio=${encodeURIComponent(horaInicio)}`;
-    const urlTerminos = `${frontendUrl}/terminosCondiciones`;
+    const empresa = process.env.NOMBRE_EMPRESA || "Sistema de Agendamiento";
 
     const text =
-      `¡Tu cita con Silueta Chic ha sido confirmada! 🎉\n\n` +
+      `¡Tu cita en ${empresa} ha sido registrada! 🩺🏥\n\n` +
       `Detalle de tu reserva:\n` +
       `• Nombre: ${nombrePaciente} ${apellidoPaciente}\n` +
       `• RUT: ${rut}\n` +
@@ -58,87 +57,49 @@ export default class NotificacionAgendamiento {
       `• Inicio: ${fechaInicio} ${horaInicio}\n` +
       `• Término: ${fechaFinalizacion} ${horaFinalizacion}\n` +
       `• Estado: ${estadoReserva}\n\n` +
-      `Para asegurar una sesión exitosa, revisa estos puntos clave:\n\n` +
-      `1) Preparación Obligatoria:\n` +
-      `- La zona debe asistir rasurada con rasuradora de varón (máx. 24h antes) y limpia e higienizada (sin cremas, maquillaje, desodorantes, etc.).\n` +
-      `- Si no cumple la preparación, la sesión se pierde y se descuenta del paquete.\n\n` +
-      `2) Políticas de Asistencia:\n` +
-      `- Puntualidad: Tolerancia de 10 minutos de atraso. Si se excede, la sesión se pierde.\n` +
-      `- Cancelación: Avise con al menos 24 horas de anticipación. El aviso tardío o No-Show resultará pérdida de la sesión.\n\n` +
-      `3) Recordatorio de Cuidados PRE Y POST:\n` +
-      `Antes:\n` +
-      `- Suspender sol/bronceado (30 días antes) y métodos de arranque (cera/pinzas).\n` +
-      `- Suspender ácidos tópicos (1 semana antes).\n` +
-      `- Suspender medicación fotosensibilizante/anticoagulante bajo supervisión médica.\n` +
-      `- Si hay vacuna, esperar 15 días.\n` +
-      `Después:\n` +
-      `- Evitar sol/bronceado (48 horas).\n` +
-      `- Usar protector solar FPS 50.\n` +
-      `- Evitar calor/sudor (24 horas).\n` +
-      `- No depilar con métodos de arranque.\n\n` +
-      `Si necesitas modificar o cancelar tu reserva, responde este correo.\n\n` +
-      `Términos y Condiciones: ${frontendUrl}/terminosCondiciones\n\n` +
-      `Saludos.`;
+      `Te recordamos confirmar tu cita a través de los enlaces de este correo.\n` +
+      `En caso de no poder asistir, te pedimos cancelarla con anticipación para poder reasignar ese horario a otro paciente.\n` +
+      `¡Muchas gracias por tu colaboración! 🗓️\n\n` +
+      `Saludos, ${empresa}.`;
 
     const html = `
       <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #111; max-width: 600px; margin: 0 auto;">
-        <h2 style="color: #667eea;">¡Tu cita con ${fromName} ha sido confirmada! 🎉</h2>
-        <p>Hola <b>${nombrePaciente} ${apellidoPaciente}</b>,</p>
-        <p><b>Detalle de tu reserva:</b></p>
-        <ul style="list-style: none; padding: 0; background: #f3f4f6; padding: 15px; border-radius: 8px;">
-          <li style="margin-bottom: 8px;"><b>RUT:</b> ${rut}</li>
-          <li style="margin-bottom: 8px;"><b>Teléfono:</b> ${telefono}</li>
-          <li style="margin-bottom: 8px;"><b>Inicio:</b> ${fechaInicio} ${horaInicio}</li>
-          <li style="margin-bottom: 8px;"><b>Término:</b> ${fechaFinalizacion} ${horaFinalizacion}</li>
-          <li><b>Estado:</b> ${estadoReserva}</li>
-        </ul>
-
-        <!-- Botones de acción -->
-        <div style="text-align: center; margin: 30px 0;">
-          <p style="margin-bottom: 15px; font-weight: bold; color: #374151;">¿Confirmas tu asistencia?</p>
-          <a href="${urlConfirmar}" style="display: inline-block; background: #10b981; color: white; padding: 12px 30px; text-decoration: none; border-radius: 6px; margin: 0 10px; font-weight: bold;">✅ Confirmar Cita</a>
-          <a href="${urlCancelar}" style="display: inline-block; background: #ef4444; color: white; padding: 12px 30px; text-decoration: none; border-radius: 6px; margin: 0 10px; font-weight: bold;">❌ Cancelar Cita</a>
+        <div style="background: #667eea; color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0;">
+          <h2 style="margin: 0;">Tu cita en ${fromName} ha sido registrada</h2>
         </div>
 
-        <!-- Botón de Términos y Condiciones -->
-        <div style="text-align: center; margin: 15px 0;">
-          <p style="margin-bottom: 10px; font-size: 13px; color: #6b7280;">Al confirmar tu cita, aceptas nuestros términos y condiciones:</p>
-          <a href="${urlTerminos}" style="display: inline-block; background: #667eea; color: white; padding: 10px 25px; text-decoration: none; border-radius: 6px; font-weight: bold; font-size: 13px;">📋 Términos y Condiciones</a>
+        <div style="padding: 20px; background: #ffffff; border: 1px solid #e5e7eb; border-top: none;">
+          <p>Hola <b>${nombrePaciente} ${apellidoPaciente}</b>,</p>
+          <p>Te informamos que tu cita ha sido registrada exitosamente. A continuación el detalle:</p>
+
+          <table style="width: 100%; background: #f3f4f6; padding: 15px; border-radius: 8px; border-collapse: collapse;">
+            <tr><td style="padding: 8px;"><b>RUT:</b></td><td style="padding: 8px;">${rut}</td></tr>
+            <tr><td style="padding: 8px;"><b>Teléfono:</b></td><td style="padding: 8px;">${telefono}</td></tr>
+            <tr><td style="padding: 8px;"><b>Inicio:</b></td><td style="padding: 8px;">${fechaInicio} ${horaInicio}</td></tr>
+            <tr><td style="padding: 8px;"><b>Término:</b></td><td style="padding: 8px;">${fechaFinalizacion} ${horaFinalizacion}</td></tr>
+            <tr><td style="padding: 8px;"><b>Estado:</b></td><td style="padding: 8px;">${estadoReserva}</td></tr>
+          </table>
+
+          <div style="text-align: center; margin: 30px 0;">
+            <p style="margin-bottom: 15px; font-weight: bold; color: #374151;">¿Confirmas tu asistencia?</p>
+            <a href="${urlConfirmar}" style="display: inline-block; background: #10b981; color: white; padding: 12px 30px; text-decoration: none; border-radius: 6px; margin: 0 10px; font-weight: bold;">Confirmar Cita</a>
+            <a href="${urlCancelar}" style="display: inline-block; background: #ef4444; color: white; padding: 12px 30px; text-decoration: none; border-radius: 6px; margin: 0 10px; font-weight: bold;">Cancelar Cita</a>
+          </div>
+
+          <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 25px 0;" />
+          <p style="font-size: 13px; color: #6b7280;">
+            En caso de no poder asistir, te pedimos cancelar tu cita con anticipación para poder reasignar ese horario a otro paciente.
+          </p>
         </div>
 
-        <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 30px 0;" />
-        <p><b>Preparación Obligatoria:</b></p>
-        <ul>
-          <li>La zona debe asistir rasurada con rasuradora de varón (máx. 24h antes) y limpia e higienizada (sin cremas, maquillaje, desodorantes, etc.).</li>
-          <li>Si no cumple la preparación, la sesión se pierde y se descuenta del paquete.</li>
-        </ul>
-        <p><b>Políticas de Asistencia:</b></p>
-        <ul>
-          <li><b>Puntualidad:</b> Tolerancia de 10 minutos de atraso. Si se excede, la sesión se pierde.</li>
-          <li><b>Cancelación:</b> Avise con al menos 24 horas de anticipación. El aviso tardío o No-Show resultará pérdida de la sesión.</li>
-        </ul>
-        <p><b>Cuidados PRE y POST:</b></p>
-        <p style="margin: 6px 0;"><b>Antes:</b></p>
-        <ul>
-          <li>Suspender sol/bronceado (30 días antes) y métodos de arranque (cera/pinzas).</li>
-          <li>Suspender ácidos tópicos (1 semana antes).</li>
-          <li>Suspender medicación fotosensibilizante/anticoagulante bajo supervisión médica.</li>
-          <li>Si hay vacuna, esperar 15 días.</li>
-        </ul>
-        <p style="margin: 6px 0;"><b>Después:</b></p>
-        <ul>
-          <li>Evitar sol/bronceado (48 horas).</li>
-          <li>Usar protector solar FPS 50.</li>
-          <li>Evitar calor/sudor (24 horas).</li>
-          <li>No depilar con métodos de arranque.</li>
-        </ul>
-        <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 30px 0;" />
-        <p style="text-align: center; color: #6b7280; font-size: 14px;">
-          Si tienes dudas, responde este correo o contáctanos directamente.
-        </p>
-        <p style="text-align: center; color: #667eea; font-weight: bold;">
-          ¡Nos vemos pronto! 💜
-        </p>
+        <div style="background: #f9fafb; padding: 15px; text-align: center; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 8px 8px;">
+          <p style="margin: 0; color: #6b7280; font-size: 13px;">
+            Si tienes dudas, responde este correo o contáctanos directamente.
+          </p>
+          <p style="margin: 8px 0 0; color: #667eea; font-weight: bold; font-size: 14px;">
+            ${fromName}
+          </p>
+        </div>
       </div>
     `;
 
@@ -194,7 +155,7 @@ export default class NotificacionAgendamiento {
     }
 
     const fromEmail = process.env.CORREO_REMITENTE || "desarrollo.native.code@gmail.com";
-    const fromName = NOMBRE_EMPRESA || "SiluetaChic";
+    const fromName = NOMBRE_EMPRESA || "Sistema de Agendamiento";
 
     if (!fromEmail) {
       console.warn("[MAIL EQUIPO] CORREO_REMITENTE no configurado. Correo no enviado.");
