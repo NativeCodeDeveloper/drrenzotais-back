@@ -352,6 +352,53 @@ export default class ReservaPacienteController {
 
 
 
+
+
+    static async insertarReservaBloqueos(req, res) {
+        try {
+            const {
+                nombrePaciente,
+                apellidoPaciente,
+                rut,
+                telefono,
+                email,
+                fechaInicio,
+                horaInicio,
+                fechaFinalizacion,
+                horaFinalizacion,
+                estadoReserva
+
+            } = req.body;
+
+            console.log(req.body);
+
+            if (!nombrePaciente || !apellidoPaciente || !rut || !telefono || !email || !fechaInicio || !horaInicio || !fechaFinalizacion || !horaFinalizacion || !estadoReserva) {
+                return res.status(400).send({message: "sindata"})
+            }
+
+            const claseReservaPaciente = new ReservaPacientes();
+
+            const validacionHoras = await claseReservaPaciente.validarDisponibilidadBoolean(fechaInicio, horaInicio, fechaFinalizacion, horaFinalizacion);
+            if (!validacionHoras) {
+                return res.status(400).send({message: "conflicto"})
+            } else {
+
+                const resultadoQuery = await claseReservaPaciente.insertarReservaPaciente(nombrePaciente, apellidoPaciente, rut, telefono, email, fechaInicio, horaInicio, fechaFinalizacion, horaFinalizacion, estadoReserva);
+                if (resultadoQuery.affectedRows > 0) {
+                    return res.status(200).send({message: true})
+                } else {
+                    return res.status(200).send({message: false})
+                }
+            }
+
+        } catch (error) {
+            console.error(error);
+            return res.status(500).send({message: error.message});
+        }
+    }
+
+
+
     //FUNCION PARA INSERTAR PACIENTE Y FICHAS SEGUN SI EXITES O NO PREVIAMENTE INGRESADOS, RUT MANDA.
     static async insertarReservaPacienteFicha(req, res) {
         try {
